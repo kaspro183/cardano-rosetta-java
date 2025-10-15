@@ -199,7 +199,7 @@ RUN apt update && apt install -y \
   && update-locale LANG=en_US.UTF-8 \
   && apt clean
 
-ENV PG_VERSION_TAG=REL_14_11
+ENV PG_VERSION_TAG=REL_17_6
 
 WORKDIR /usr/src
 
