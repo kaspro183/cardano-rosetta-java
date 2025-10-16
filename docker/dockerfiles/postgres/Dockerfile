@@ -18,7 +18,7 @@ RUN apt update && apt install -y \
   && update-locale LANG=en_US.UTF-8 \
   && apt clean
 
-ENV PG_VERSION_TAG=REL_17_6
+ENV PG_VERSION_TAG=REL_18_0
 ENV PG_DATA="/var/lib/postgresql/data"
 ENV PG_BIN="/usr/local/pgsql/bin"
 ENV PATH="$PG_BIN:$PATH"
