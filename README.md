@@ -37,98 +37,31 @@ Better hardware will improve the performance of the indexer and the node, which 
 
 ## Installation
 
-By default this Cardano-node will sync the entire chain from Genesis.
-This will take up to 48-72 hours (dependening on the system resources).
+### Docker Compose
 
-### Docker (build from source)
+Starting from version 2.0.0, Docker Compose is the only supported deployment method. By default this Cardano-node will sync the entire chain from Genesis, which will take up to 48-72 hours (depending on the system resources).
 
-If your user is not in the `docker` group you might have to execute these commands with `sudo`.
-The default config is focused on mainnet. If you want to test this on other Cardano netwoks (like `preview` or `preprod`) please adjust the `docker/.env.dockerfile` or read the documentation page on [Environment variables](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/env-vars) on other options and their default values.
-
-```bash
-    git clone https://github.com/cardano-foundation/cardano-rosetta-java
-    cd cardano-rosetta-java
-    docker build -t rosetta-java -f ./docker/Dockerfile .
-    docker run --name rosetta -v {CUSTOM_MOUNT_PATH}:/node --env-file ./docker/.env.dockerfile --env-file ./docker/.env.docker-profile-mid-level -p 8082:8082 --shm-size=4g -d rosetta-java
-```
-
-Detailed explanation can be found in the [documentation](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/docker).
-
-Depending on using a snapshot feature or not, this will take X amount of time. You can follow along with the commands below. Your instance is ready when you see: `DONE`.
-
-### Offline mode
-
-If you want to run rosetta-java in offline mode you need to set the `API_SPRING_PROFILES_ACTIVE` environment variable to `offline` in `./docker/.env.dockerfile`.
-This will disable the syncing of the node and won't start the db and the indexer.
-Default is `online`.
-
-**Useful commands:**
-
-- Following Docker container logs:
-
-```bash
-    docker logs rosetta -f
-```
-
-- Access node logs:
-
-```bash
-    docker exec rosetta tail -f /logs/node.log
-```
-
-- Access indexer logs:
-
-```bash
-    docker exec rosetta tail -f /logs/indexer.log
-```
-
-- Interactive access to container:
-
-```bash
-    docker exec -it rosetta bash # direct bash access within the container
-
-
-    # Useful commands within the container
-    cardano-cli query tip --mainnet # check node sync status
-    tail -f /logs/node.log # follow node logs
-    tail -f /logs/indexer.log # follow indexer logs
-```
-
-### Docker (using pre-built image)
-
-For every Release we provide pre-built docker images stored in the DockerHub Repositories of the Cardano Foundation ([DockerHub](https://hub.docker.com/orgs/cardanofoundation/repositories))
-To start it use the following command:
-
-```bash
-    docker run --name rosetta -v {CUSTOM_MOUNT_PATH}:/node --env-file ./docker/.env.dockerfile --env-file ./docker/.env.docker-profile-mid-level -p 8082:8082 --shm-size=4g -d cardanofoundation/cardano-rosetta-java:1.4.0
-```
-
-Changes to the configuration can be made by adjusting the `docker/.env.dockerfile` file. For more information on the environment variables, please refer to the [documentation](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/env-vars).
-
-If you want to use the `cardano-submit-api` you can additionally expose port `8090`. It can then be used to submit raw cbor transaction (API documentation here: [Link](https://input-output-hk.github.io/cardano-rest/submit-api/))
-
-```bash
-    docker run --name rosetta -v {CUSTOM_MOUNT_PATH}:/node --env-file ./docker/.env.dockerfile --env-file ./docker/.env.docker-profile-mid-level -p 8090:8090 -p 8082:8082 --shm-size=4g -d cardanofoundation/cardano-rosetta-java:1.4.0
-```
-
-### Docker compose
-
-If needed we also provide all components needed to run Rosetta in a docker-compose file.
 This will start:
 
-- Cardano-node
-- Cardano-Submit-API
-- Yaci-Store
-- Rosetta-API
-- Postgres
+- Cardano Node
+- Cardano Submit API
+- Yaci Indexer
+- Rosetta API
+- PostgreSQL Database
 
-### Entry level hardware profile
+#### Quick Start
 
 ```bash
-   docker compose --env-file .env.docker-compose --env-file .env.docker-compose-profile-mid-level -f docker-compose.yaml up -d
+git clone https://github.com/cardano-foundation/cardano-rosetta-java
+cd cardano-rosetta-java
+docker compose --env-file .env.docker-compose --env-file .env.docker-compose-profile-mid-level -f docker-compose.yaml up -d
 ```
 
-### A complete list of hardware profiles:
+#### Hardware Profiles
+
+Choose a hardware profile based on your available resources.
+
+##### A complete list of hardware profiles:
 
 ```
 .env.docker-compose-profile-entry-level
@@ -136,9 +69,31 @@ This will start:
 .env.docker-compose-profile-advanced-level
 ```
 
-See the [hardware profiles documentation](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/hardware-profiles) for a full list of hardware profiles and their configurations.
+See the [hardware profiles documentation](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/hardware-profiles) for detailed information on each profile.
 
-Further adjustments can be made by changing `.env.docker-compose` file. For more information on the environment variables, please refer to the [documentation](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/env-vars).
+#### Configuration
+
+Configuration can be customized by modifying the `.env.docker-compose` file. For more information on available environment variables, see the [Environment Variables documentation](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/env-vars).
+
+#### Useful Commands
+
+```bash
+# View logs
+docker compose logs -f api
+docker compose logs -f yaci-indexer
+docker compose logs -f cardano-node
+
+# Check service status
+docker compose ps
+
+# Stop all services
+docker compose down
+
+# Restart a specific service
+docker compose restart api
+```
+
+For more detailed deployment instructions, see the [Docker documentation](https://cardano-foundation.github.io/cardano-rosetta-java/docs/install-and-deploy/docker).
 
 ---
 
